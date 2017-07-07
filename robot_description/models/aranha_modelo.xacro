@@ -1,0 +1,435 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="aranha">
+
+<!--#############################	Anotacoes ####################################
+..............................Observacoes.......................................
+1- dividir volume de propriedades fisicas por 100 para ajustar ao sistema cgs
+
+....................Unidades de Medidas / Coordenadas...........................
+Modelo:
+escala: Decimetros  (o que e cm no modelo real agora e cm ). Pode ser alterado
+para cm
+
+RViz:
+x:vermelho
+y:verde
+z:azul
+escala: metros (sao os parametros xyz). Todos os valores sao dividos por 10 para
+se ajustar ao modelo
+
+meshcad (propriedades fisicas):
+escala: mm
+massa: ? (suponho que seja gramas)
+
+...................Proriedades Fificas.........................................
+Propriedades da base:
+
+Mesh Bounding Box Size 143.100006 70.000000 29.400000
+Mesh Volume is 73221.320312 = 732 cm³
+mass is 80 g (ESTIMADO!)
+densidade is 0,109  (ESTIMADO!)
+Center of Mass is 0.496967 0.615692 -2.474372
+
+Inertia Tensor is :
+| 29740112.000000 -63930.144531 -22012.121094 |
+| -63930.144531 167607536.000000 31788.029297 |
+| -22012.121094 31788.029297 190393200.000000 |
+
+Inertia Tensor CORRIGIDO is :
+| 0.3242 -0.6968 -2.3993 |
+|-0.6968  0.1820  0.3464 |
+|-0.2399  0.3464 0.2074 |
+
+Principal axes are :
+| 1.000000 -0.000463 -0.000138 |
+| 0.000464 0.999999 0.001395 |
+| 0.000137 -0.001396 0.999999 |
+
+axis momenta are :
+| 29740080.000000 167607520.000000 190393248.000000 |
+
+
+Propriedades da coxa
+
+Mesh Bounding Box Size 75.500000 29.400002 21.000000
+Mesh Volume is 10619.546875 = 106,195 cm³
+mass is 20 g (ESTIMADO!)
+densidade is 0,188
+Center of Mass is -1.577051 5.789495 -11.486965
+
+Inertia Tensor is :
+| 772739.562500 252936.218750 -271826.187500 |
+| 252936.218750 2266815.750000 108253.414062 |
+| -271826.187500 108253.414062 2482622.500000 |
+
+Inertia Tensor CORRIGIDO is :
+|1.4528    0.4755   -0.5110 |
+| 0.4755    4.2616    0.2035 |
+| -0.5110    0.2035    4.6673 |
+
+Principal axes are :
+| 0.973423 0.202292 -0.107359 |
+| -0.166475 0.946957 0.274880 |
+| 0.157270 -0.249702 0.955466 |
+
+axis momenta are :
+| 685565.000000 2292303.500000 2544309.250000 |
+
+
+Propriedades do Femur
+
+Mesh Bounding Box Size 48.000000 9.000000 4.500000
+Mesh Volume is 1673.442627 = 16,73
+mass is 5g (Estimado!)
+dendidade is 0,298 (EStimado!)
+Center of Mass is 0.014483 -0.004851 2.250000
+
+Inertia Tensor is :
+| 12009.717773 79.621956 -0.000083 |
+| 79.621956 366777.937500 0.000002 |
+| -0.000083 0.000002 373139.812500 |
+
+Inertia Tensor CORRIGIDO is :
+|0.0358    0.0002   -0.0000   |
+|  0.0002    1.0930    0.0000   |
+| -0.0000    0.0000    1.1120 |
+
+Principal axes are :
+| 1.000000 0.000224 -0.000000 |
+| -0.000224 1.000000 0.000000 |
+| 0.000000 -0.000000 1.000000 |
+
+axis momenta are :
+| 12009.700195 366777.968750 373139.812500 |
+
+
+	Propriedades da Tibia
+
+Mesh Bounding Box Size 15.837368 29.400000 72.500000 (em milimetros)
+Mesh Volume is 9065.651367 = 90.656cm
+mass is 16g (Estimado!)
+densidade is 0,1764
+Center of Mass is -0.060397 8.480839 16.806383
+
+
+Inertia Tensor is :
+| 1801712.125000 2228.352295 1093.496216 |
+| 2228.352295 1449666.500000 -81831.023438 |
+| 1093.496216 -81831.023438 601778.562500 |
+
+Inertia Tensor CORRIGIDO is :
+3.1782    0.0039    0.0019
+0.0039    2.5572   -0.1443
+0.0019   -0.1443    1.0615
+
+Principal axes are :
+| 0.999981 -0.006141 -0.001077 |
+| 0.006216 0.995439 0.095197 |
+| 0.000487 -0.095202 0.995458 |
+
+axis momenta are :
+| 1801726.500000 1457478.875000 593951.750000 |
+		-->
+<!--################### Declaração de váriaveis e constantes ################-->
+<xacro:property name="pi" value="3.1415926535897931" />
+<xacro:property name="altura_base" value="0.8" />
+<!-- Distancia das peças -->
+<xacro:property name="dist_coxa_x_d" value="0.5" />
+<xacro:property name="dist_coxa_x_e" value="-0.5" />
+<xacro:property name="dist_femurj_x_d" value="0.52" />
+<xacro:property name="dist_femurj_x_e" value="-0.52" />
+
+
+<!-- Joint properties -->
+<xacro:property name="joint_lower_limit" value="-${pi/2}" />
+<xacro:property name="joint_upper_limit" value="${pi/2}" />
+<xacro:property name="joint_effort" value="10000" />
+<xacro:property name="joint_velocity" value="100" />
+
+<!--###################### Comunicacao com gazebo ###########################-->
+<gazebo>
+  <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+    <robotNamespace>/crab</robotNamespace> <!--Nao sei o que faz -->
+  </plugin>
+</gazebo>
+
+<!--######################## Faz a Base do Robo #############################-->
+<link name="base_link"/>
+<joint name="base_joint" type="fixed">
+  <axis xyz="0 0 1"/>
+  <parent link="base_link"/>
+  <child link="thorax"/>
+  <!-- <origin rpy="0 0 ${pi/2}" xyz="0 0 ${altura_base}"/> -->
+  <origin rpy="0 0 0" xyz="0 0 0"/> 
+</joint>
+
+<link name="thorax">
+  <visual>
+    <geometry>
+      <mesh scale="0.01 0.01 0.01" filename="package://robot_description/meshes/base.stl"/>
+    </geometry>
+    <origin rpy="0 0 ${pi/2}" xyz="0 0 ${altura_base}"/>
+    <material name="verde_limao">
+      <color rgba="0.5 0.9 0.5 1"/>
+    </material>
+  </visual>
+
+</link>
+
+<!--################## Macros da Perna/Fazendo a perna em si ################-->
+<xacro:macro name="leg" params="lado num x y dist_x_coxa dist_femurj_x">
+
+  <!--Joint e Link para fixar coxa (caso contrario gira em torno do centro da base)-->
+  <joint name="perna_centro_joint_${num}" type="fixed">
+    <axis xyz="0 0 1"/>
+    <origin xyz="${x} ${y} ${altura_base+ 0.11}" rpy="0 0 0" /> <!-- imp -->
+    <parent link="thorax" />
+    <child link="perna_centro_${num}" />
+  </joint>
+
+  <link name="perna_centro_${num}" >
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+      <mass value="0.00001"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+    </inertial>
+  </link>
+<!--..............Joint entre "thorax"(thorax) e coxa / Link da Coxa ..........-->
+<joint name="coxa_joint_${num}" type="revolute">
+  <parent link="perna_centro_${num}"/>
+  <axis xyz="0 0 1" />
+  <origin xyz="0 0 0" rpy="0 0 0" /> <!-- segundo-->
+  <child link="coxa_${num}" />
+  <limit lower="${joint_lower_limit}" upper="${joint_upper_limit}"
+	 effort="${joint_effort}" velocity="${joint_velocity}" />
+
+</joint>
+
+<transmission name="coxa_transmission_${num}">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="coxa_joint_${num}">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+  </joint>
+  <actuator name="coxa_motor_${num}">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+
+<link name="coxa_${num}">
+  <visual>
+    <origin xyz="0 0 ${0}" rpy="0 0 0" />
+    <geometry>
+      <mesh scale="0.01 0.01 0.01" filename="package://robot_description/meshes/coxa_${lado}.stl"/>
+    </geometry>
+    <material name="">
+      <color rgba="0.7 0.7 0 1" />
+    </material>
+  </visual>
+
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <geometry>
+      <mesh scale="0.01 0.01 0.01" filename="package://robot_description/meshes/coxa_${lado}.stl"/>
+    </geometry>
+    <material name="">
+      <color rgba="0.7 0.7 0 1" />
+    </material>
+  </collision>
+
+  <inertial>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />  <!--Acho que sao os valores do centro de massa/10-->
+    <mass value="0.00001"/>
+    <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+
+    
+  </inertial>
+</link>
+
+<gazebo reference="coxa_${num}">
+  <mu1>0.2</mu1>
+  <mu2>0.2</mu2>
+
+</gazebo>
+
+<!--.................Joint entre coxa e femur / Link ddo
+    Femur. .............-->
+
+<joint name="femur_centro_${num}" type="fixed">
+   <axis xyz="0 1 0" />
+    <origin xyz="${dist_femurj_x} -0.15 -0.05" rpy=" 0 0 0" />
+    <parent link="coxa_${num}" />
+    <child link="femur_centro_${num}" /> 
+ 
+  </joint>
+
+  <link name="femur_centro_${num}" >
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+      <mass value="0.00001"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+    </inertial>
+  </link>
+
+
+<joint name="femur_joint_${num}" type="revolute">
+  <origin xyz="0 0 0" rpy="0 0 0" />
+  <parent link="femur_centro_${num}" />
+  <child link="femur_${num}" />
+  <axis xyz="0 1 0" />
+  <limit lower="${joint_lower_limit}" upper="${joint_upper_limit}" effort="${joint_effort}" velocity="${joint_velocity}" />
+</joint>
+
+<transmission name="femur_transmission_${num}">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="femur_joint_${num}">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+  </joint>
+  <actuator name="femur_motor_${num}">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+
+<link name="femur_${num}">
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <geometry>
+      <mesh scale="0.01 0.01 0.01"  filename="package://robot_description/meshes/femur.stl" />
+    </geometry>
+    <material name="">
+      <color rgba="0 0.7 0.7 1" />
+    </material>
+  </visual>
+
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <geometry>
+      <mesh scale="0.01 0.01 0.01"  filename="package://robot_description/meshes/femur.stl" />
+    </geometry>
+    <material name="">
+      <color rgba="0 0.7 0.7 1" />
+    </material>
+  </collision>
+
+  <inertial>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+    <mass value="0.00001"/>
+
+    <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+
+
+  </inertial>
+</link>
+
+<gazebo reference="femur_${num}">
+  <mu1>0.2</mu1>
+  <mu2>0.2</mu2>
+  
+</gazebo>
+
+<!--.................Joint entre femur e Tibia / Link do Tibia. .............-->
+
+  <!--Joint e Link para fixar coxa (caso contrario gira em torno do centro da base)-->
+  <joint name="tibia_centro_${num}" type="fixed">
+    <axis xyz="0 1 0"/>
+    <origin xyz="${0} 0.045 -0.36" rpy="0 0 0" />
+    <parent link="femur_${num}" />
+    <child link="tibia_centro_${num}" /> 
+ 
+  </joint>
+
+  <link name="tibia_centro_${num}" >
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+      <mass value="0.00001"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+    </inertial>
+  </link>
+  
+<joint name="tibia_joint_${num}" type="revolute">
+  <origin xyz="0 0 0" rpy="0 0 0" />
+  <parent link="tibia_centro_${num}" />
+  <child link="tibia_${num}" />
+  <axis xyz="0 1 0" />
+  <limit lower="${joint_lower_limit}" upper="${joint_upper_limit}" effort="${joint_effort}" velocity="${joint_velocity}" />
+</joint>
+
+<transmission name="tibia_transmission_${num}">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="tibia_joint_${num}">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+  </joint>
+  <actuator name="tibia_motor_${num}">
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+
+<link name="tibia_${num}">
+  <visual>
+    <origin xyz="-0 0 0" rpy="0 0 0 " />
+    <geometry>
+      <mesh scale="0.01 0.01 0.01" filename="package://robot_description/meshes/tibia.stl" />
+    </geometry>
+    <material name="">
+      <color rgba="0.7 0 0.7 1" />
+    </material>
+  </visual>
+
+  <collision>
+    <origin xyz="0.0 0.0 0" rpy="0 0 0 " />
+    <geometry>
+      <mesh scale="0.01 0.01 0.01" filename="package://robot_description/meshes/tibia.stl" />
+    </geometry>
+    <material name="">
+      <color rgba="0 0.7 0.7 1" />
+    </material>
+  </collision>
+
+  <inertial>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+    <mass value="0.00001"/>
+    <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+
+
+    
+  </inertial>
+</link>
+
+!--............................. Patas......................................-->
+<joint name="tibia_foot_joint_${num}" type="fixed">
+  <axis xyz = "0 0 1"/>
+  <origin xyz="0 0.08 -0.57" rpy="0 0 0" />
+  <parent link="tibia_${num}" />
+  <child link="tibia_foot_${num}" />
+</joint>
+
+<link name="tibia_foot_${num}" >
+</link>
+
+</xacro:macro>
+
+
+<!--################# Declaração da perna e suas posições ###################-->
+<xacro:leg lado="e" num="1" x="${-2.3/20}" y="0.65"
+	   dist_x_coxa="${dist_coxa_x_e}" dist_femurj_x="${dist_femurj_x_e}"/>
+
+<xacro:leg lado="e" num="2" x="${-2.3/20}" y="0"
+	   dist_x_coxa="${dist_coxa_x_e}" dist_femurj_x="${dist_femurj_x_e}" />
+
+<xacro:leg lado="e" num="3" x="${-2.3/20}" y="-0.65"
+	   dist_x_coxa="${dist_coxa_x_e}" dist_femurj_x="${dist_femurj_x_e}"/>
+
+<xacro:leg lado="d" num="4" x="${2.3/20}" y="0.65"
+	   dist_x_coxa="${dist_coxa_x_d}" dist_femurj_x="${dist_femurj_x_d}" />
+
+
+<xacro:leg lado="d" num="5" x="${2.3/20}" y="0"
+	   dist_x_coxa="${dist_coxa_x_d}" dist_femurj_x="${dist_femurj_x_d}"/>
+
+
+<xacro:leg lado="d" num="6" x="${2.3/20}" y="-0.65"
+	   dist_x_coxa="${dist_coxa_x_d}" dist_femurj_x="${dist_femurj_x_d}"/>
+
+</robot>

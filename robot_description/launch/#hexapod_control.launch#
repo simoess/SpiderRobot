@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Load joint controller configuration file -->
+    <rosparam file="$(find modelo)/control/hexapod_control.yaml" command="load"/>
+
+    <!-- Load the controllers -->
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+        output="screen" ns="/crab"
+        args="
+        coxa_joint_d1_position_controller
+        coxa_joint_d2_position_controller
+        coxa_joint_d3_position_controller
+        coxa_joint_e1_position_controller
+        coxa_joint_e2_position_controller
+        coxa_joint_e3_position_controller
+        femur_joint_d1_position_controller
+        femur_joint_d2_position_controller
+        femur_joint_d3_position_controller
+       femur_joint_e1_position_controller
+        femur_joint_e2_position_controller
+        femur_joint_e3_position_controller
+        tibia_joint_d1_position_controller
+        tibia_joint_d2_position_controller
+        tibia_joint_d3_position_controller
+        tibia_joint_e1_position_controller
+        tibia_joint_e2_position_controller
+        tibia_joint_e3_position_controller
+
+        joint_state_controller"
+    />
+
+    <!-- Convert joint states to TF transforms -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+        respawn="false" output="screen">
+        <remap from="/joint_states" to="/crab/joint_states"/>
+    </node>
+</launch>

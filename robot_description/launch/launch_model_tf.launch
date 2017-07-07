@@ -1,0 +1,14 @@
+<launch>
+  <param
+      name="robot_description"
+      command="$(find xacro)/xacro.py '$(find robot_description)/models/aranha_modelo.xacro'" />
+
+
+  <node pkg="joint_state_publisher" type="joint_state_publisher" name="robo_aranha_joint_publisher">
+    <param name="rate" value="10"/>
+  </node>
+ 
+  <node pkg="robot_state_publisher" type="robot_state_publisher"
+	name="robo_aranha_state_publisher" >
+  </node>
+</launch>

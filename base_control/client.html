@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<meta charset="utf-8" />
+
+
+<script type="text/javascript" src="eventemitter2.min.js"></script>
+<script type="text/javascript" src="roslib.min.js"></script>
+<script type="text/javascript" src="gamepad.js"></script>
+
+
+<script type="text/javascript" type="text/javascript">
+  // Joystick
+
+  const gamepad = new Gamepad();
+
+  // CONTROLE CONECTADO
+  gamepad.on('connect', e => {
+  console.log(`controller ${e.index} connected!`);
+  });
+
+  //CONTROLE DESCONECTADO
+  gamepad.on('disconnect', e => {
+  console.log(`controller ${e.index} disconnected!`);
+  });
+
+  //calback quadrado pressionado
+  gamepad.on('press', 'button_1', e => {
+  sendCommand('DESCER');
+  //    console.log('1');
+  });
+
+  //calback quadrado pressionado
+  gamepad.on('press', 'button_2', e => {
+  sendCommand('ROTATE_RIGHT');
+  });
+
+  //calback quadrado pressionado
+  gamepad.on('press', 'button_3', e => {
+  sendCommand('ROTATE_LEFT');
+  });
+
+  //calback quadrado pressionado
+  gamepad.on('press', 'button_4', e => {
+  sendCommand('SUBIR');
+  });
+
+  //calback quadrado pressionado
+  gamepad.on('press', 'd_pad_up', e => {
+  sendCommand('DIREITA');
+  });
+
+  //calback quadrado pressionado
+  gamepad.on('press', 'd_pad_down', e => {
+  sendCommand('CIMA');
+  });
+
+  //calback quadrado pressionado
+  gamepad.on('press', 'd_pad_left', e => {
+  sendCommand('BAIXO');
+  });
+
+  //calback quadrado pressionado
+  gamepad.on('press', 'd_pad_right', e => {
+  sendCommand('DIREITA');
+  });
+
+
+  // Connecting to ROS
+  // -----------------
+
+  var ros = new ROSLIB.Ros({
+    url : 'ws://10.42.0.1:9090'
+  });
+
+  ros.on('connection', function() {
+    console.log('Connected to websocket server.');
+      document.getElementById("connectionStatus").innerHTML = "Online";
+      document.getElementById("connectionStatus").style.color = "#72c66b";
+  });
+
+  ros.on('error', function(error) {
+    console.log('Error connecting to websocket server: ', error);
+      document.getElementById("connectionStatus").innerHTML = "Offline";
+      document.getElementById("connectionStatus").style.color = "#e2211d";
+  });
+
+  ros.on('close', function() {
+    console.log('Connection to websocket server closed.');
+      document.getElementById("connectionStatus").innerHTML = "Offline";
+      document.getElementById("connectionStatus").style.color = "#e2211d";
+  });
+
+  // Publishing a Topic
+  // ------------------
+     var aranhaTopic = new ROSLIB.Topic({
+     ros : ros,
+     name : '/RoboAranhaController',
+         messageType : 'robo_aranha/AranhaCommand'
+     });
+var actionList = [];
+  // Subscribing to a Topic
+  // ----------------------
+
+  var listener = new ROSLIB.Topic({
+    ros : ros,
+    name : '/BasePublisher',
+   messageType : 'robo_aranha/RoboAranhaResponse'
+  });
+  listener.subscribe(function(message) {
+	actionList.shift();
+	actionList.shift();
+      	document.getElementById("list").innerHTML = actionList.join("");
+    console.log('Received message on ' + listener.name + ': ' + message.data);
+    listener.unsubscribe();
+  });
+
+  // Calling a service
+  // -----------------
+
+  function sendCommand(command){
+      actionList.push(command);
+      actionList.push("<br />");
+      var aranhaCommand = new ROSLIB.Message({
+          command : command,
+          parameter: 1
+      });
+      aranhaTopic.publish(aranhaCommand);
+      document.getElementById("list").innerHTML = actionList.join("");
+  };
+
+</script>
+
+<style>
+body {
+    <--background-image: url("Images/background.png");-->
+    background-color: #ffffff;
+
+}
+
+div.buttonBox {
+    position: absolute;
+    top: 250px;
+    left: 300px;
+    width: 450px;
+    height: 450px;
+}
+
+div.statusBar{
+    position: absolute;
+    top: 250px;
+    right: 110px;
+    width: 170px;
+    height: 450px;
+    border: 5px solid black;
+}
+
+div.buttonBox2{
+    position: absolute;
+    top: 250px;
+    left: 1000px;
+    width: 450px;
+    height: 450px;
+}
+
+div.buttonBox3{
+    position: absolute;
+    top: 600px;
+    left: 735px;
+    width: 310px;
+    height: 100px;
+
+}
+
+div.buttonLeft {
+    position: absolute;
+    top: 150px;
+    right: 300px;
+    width: 150px;
+    height: 150px;
+}
+
+div.buttonRight {
+    position: absolute;
+    top: 150px;
+    right: 0px;
+    width: 150px;
+    height: 150px;
+}
+
+div.buttonFront {
+    position: absolute;
+    top: 0px;
+    right: 150px;
+    width: 150px;
+    height: 150px;
+}
+
+div.buttonBack {
+    position: absolute;
+    top: 300px;
+    right: 150px;
+    width: 150px;
+    height: 150px;
+}
+
+div.buttonDance {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 150px;
+    height: 100px;
+}
+
+div.buttonArmar{
+    position: absolute;
+    top: 0px;
+    right: 160px;
+    width: 150px;
+    height: 100px;
+}
+
+div.buttonRotateLeft {
+    position: absolute;
+    top: 150px;
+    right: 300px;
+    width: 150px;
+    height: 150px;
+}
+
+div.buttonRotateRight {
+    position: absolute;
+    top: 150px;
+    right: 0px;
+    width: 150px;
+    height: 150px;
+}
+
+div.buttonUp {
+    position: absolute;
+    top: 0px;
+    right: 150px;
+    width: 150px;
+    height: 150px;
+}
+
+div.buttonDown {
+    position: absolute;
+    top: 300px;
+    right: 150px;
+    width: 150px;
+    height: 150px;
+}
+div.buttonTrajetoria {
+    position: absolute;
+    right: 125px;
+    top: 30px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container" align = center>
+	<h1 style = "font-size: 80px; font-family: Times New Roman, fantasy, cursive">Robô Aranha</h1>
+		<div class="buttonTrajetoria">
+	<input type="image" onclick="location.href='trajetorias.html'" value="Go to Google" src ="Images/Trajectory.png" height= "100" size = "150" />
+		</div align = right>
+	<h2 id = "connectionStatus"></h2>
+</div>
+
+<div class = "container">
+	<div class="buttonBox">
+
+		<div class="buttonFront">
+  			<input id="frente" type="image" src ="Images/ButtonFront.png" height= "150" size = "150" value="FRENTE" onclick="sendCommand('FRENTE');" />
+		</div>
+
+		<div class = "buttonBack">
+  			<input id="tras" type="image" src ="Images/ButtonBack.png" height= "150" size = "150" value="TRAS" onclick="sendCommand('TRAS');" />
+		</div>
+
+		<div class = "buttonLeft">
+  			<input id="esqueda" type="image" src ="Images/ButtonLeft.png" height= "150" size = "150" value="ESQUERDA" onclick="sendCommand('ESQUERDA');" />
+		</div>
+
+		<div class = "buttonRight">
+  			<input id="direita" type="image" src ="Images/ButtonRight.png" height= "150" size = "150" value="DIREITA" onclick="sendCommand('DIREITA');" />
+		</div>
+
+	</div>
+</div>
+
+<div class = "container">
+	<div class="buttonBox2">
+		<div class = "buttonRotateLeft">
+			<input id="ROTATE_LEFT" type="image" src ="Images/RotateLeft.png" height= "150" size = "150" value="ROTATE_LEFT" onclick="sendCommand('ROTATE_LEFT');" />
+		</div>
+
+		<div class = "buttonRotateRight">
+			<input id= "ROTATE_RIGHT" type="image" src ="Images/RotateRight.png" height= "150" size = "150" value="ROTATE_RIGHT" onclick="sendCommand('ROTATE_RIGHT');" />
+		</div>
+
+		<div class = "buttonUp">
+			<input id="UP" type="image" src ="Images/Up.png" height= "150" size = "150" value="SUBIR" onclick="sendCommand('SUBIR');" />
+		</div>
+
+		<div class = "buttonDown">
+			<input id="DOWN" type="image" src ="Images/Down.png" height= "150" size = "150" value="DESCER" onclick="sendCommand('DESCER');" />
+		</div>
+	</div>
+</div>
+
+<div class = "container">
+	<div class="buttonBox3">
+
+		<div class = "buttonArmar">
+			<input id = "armar" type="image" src ="Images/Start.png" height= "100" size = "150" onclick ="sendCommand('INICIAR');">
+		</div>
+
+		<div class = "buttonDance">
+  			<input id="dancar" type="image" src ="Images/Dance.jpg" height= "100" size = "150" value="DANCAR" onclick="sendCommand('DANCAR');" />
+		</div>
+	</div>
+</div>
+
+<div class="container">
+	<div class = "statusBar" style= "overflow:scroll;">
+		<p align = center style = " color: blue; top:1px; left: 1px;">Action Queue</p>
+		<p id="list" align= center></p>
+
+	</div>
+
+</div>
+
+
+
+
+</body>
+
+</html>

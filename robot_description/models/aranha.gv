@@ -1,0 +1,98 @@
+digraph G {
+node [shape=box];
+"base_link" [label="base_link"];
+"thorax" [label="thorax"];
+"perna_centro_1" [label="perna_centro_1"];
+"coxa_1" [label="coxa_1"];
+"femur_1" [label="femur_1"];
+"tibia_1" [label="tibia_1"];
+"tibia_foot_1" [label="tibia_foot_1"];
+"perna_centro_2" [label="perna_centro_2"];
+"coxa_2" [label="coxa_2"];
+"femur_2" [label="femur_2"];
+"tibia_2" [label="tibia_2"];
+"tibia_foot_2" [label="tibia_foot_2"];
+"perna_centro_3" [label="perna_centro_3"];
+"coxa_3" [label="coxa_3"];
+"femur_3" [label="femur_3"];
+"tibia_3" [label="tibia_3"];
+"tibia_foot_3" [label="tibia_foot_3"];
+"perna_centro_4" [label="perna_centro_4"];
+"coxa_4" [label="coxa_4"];
+"femur_4" [label="femur_4"];
+"tibia_4" [label="tibia_4"];
+"tibia_foot_4" [label="tibia_foot_4"];
+"perna_centro_5" [label="perna_centro_5"];
+"coxa_5" [label="coxa_5"];
+"femur_5" [label="femur_5"];
+"tibia_5" [label="tibia_5"];
+"tibia_foot_5" [label="tibia_foot_5"];
+"perna_centro_6" [label="perna_centro_6"];
+"coxa_6" [label="coxa_6"];
+"femur_6" [label="femur_6"];
+"tibia_6" [label="tibia_6"];
+"tibia_foot_6" [label="tibia_foot_6"];
+node [shape=ellipse, color=blue, fontcolor=blue];
+"base_link" -> "base_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"base_joint" -> "thorax"
+"thorax" -> "perna_centro_joint_1" [label="xyz: -0.115 0.65 0.91 \nrpy: 0 -0 0"]
+"perna_centro_joint_1" -> "perna_centro_1"
+"perna_centro_1" -> "coxa_joint_1" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"coxa_joint_1" -> "coxa_1"
+"coxa_1" -> "femur_joint_1" [label="xyz: -0.52 -0.15 -0.05 \nrpy: 0 -0 0"]
+"femur_joint_1" -> "femur_1"
+"femur_1" -> "tibia_joint_1" [label="xyz: 0 0.045 -0.36 \nrpy: 0 -0 0"]
+"tibia_joint_1" -> "tibia_1"
+"tibia_1" -> "tibia_foot_joint_1" [label="xyz: 0 0.08 -0.57 \nrpy: 0 -0 0"]
+"tibia_foot_joint_1" -> "tibia_foot_1"
+"thorax" -> "perna_centro_joint_2" [label="xyz: -0.115 0 0.91 \nrpy: 0 -0 0"]
+"perna_centro_joint_2" -> "perna_centro_2"
+"perna_centro_2" -> "coxa_joint_2" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"coxa_joint_2" -> "coxa_2"
+"coxa_2" -> "femur_joint_2" [label="xyz: -0.52 -0.15 -0.05 \nrpy: 0 -0 0"]
+"femur_joint_2" -> "femur_2"
+"femur_2" -> "tibia_joint_2" [label="xyz: 0 0.045 -0.36 \nrpy: 0 -0 0"]
+"tibia_joint_2" -> "tibia_2"
+"tibia_2" -> "tibia_foot_joint_2" [label="xyz: 0 0.08 -0.57 \nrpy: 0 -0 0"]
+"tibia_foot_joint_2" -> "tibia_foot_2"
+"thorax" -> "perna_centro_joint_3" [label="xyz: -0.115 -0.65 0.91 \nrpy: 0 -0 0"]
+"perna_centro_joint_3" -> "perna_centro_3"
+"perna_centro_3" -> "coxa_joint_3" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"coxa_joint_3" -> "coxa_3"
+"coxa_3" -> "femur_joint_3" [label="xyz: -0.52 -0.15 -0.05 \nrpy: 0 -0 0"]
+"femur_joint_3" -> "femur_3"
+"femur_3" -> "tibia_joint_3" [label="xyz: 0 0.045 -0.36 \nrpy: 0 -0 0"]
+"tibia_joint_3" -> "tibia_3"
+"tibia_3" -> "tibia_foot_joint_3" [label="xyz: 0 0.08 -0.57 \nrpy: 0 -0 0"]
+"tibia_foot_joint_3" -> "tibia_foot_3"
+"thorax" -> "perna_centro_joint_4" [label="xyz: 0.115 0.65 0.91 \nrpy: 0 -0 0"]
+"perna_centro_joint_4" -> "perna_centro_4"
+"perna_centro_4" -> "coxa_joint_4" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"coxa_joint_4" -> "coxa_4"
+"coxa_4" -> "femur_joint_4" [label="xyz: 0.52 -0.15 -0.05 \nrpy: 0 -0 0"]
+"femur_joint_4" -> "femur_4"
+"femur_4" -> "tibia_joint_4" [label="xyz: 0 0.045 -0.36 \nrpy: 0 -0 0"]
+"tibia_joint_4" -> "tibia_4"
+"tibia_4" -> "tibia_foot_joint_4" [label="xyz: 0 0.08 -0.57 \nrpy: 0 -0 0"]
+"tibia_foot_joint_4" -> "tibia_foot_4"
+"thorax" -> "perna_centro_joint_5" [label="xyz: 0.115 0 0.91 \nrpy: 0 -0 0"]
+"perna_centro_joint_5" -> "perna_centro_5"
+"perna_centro_5" -> "coxa_joint_5" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"coxa_joint_5" -> "coxa_5"
+"coxa_5" -> "femur_joint_5" [label="xyz: 0.52 -0.15 -0.05 \nrpy: 0 -0 0"]
+"femur_joint_5" -> "femur_5"
+"femur_5" -> "tibia_joint_5" [label="xyz: 0 0.045 -0.36 \nrpy: 0 -0 0"]
+"tibia_joint_5" -> "tibia_5"
+"tibia_5" -> "tibia_foot_joint_5" [label="xyz: 0 0.08 -0.57 \nrpy: 0 -0 0"]
+"tibia_foot_joint_5" -> "tibia_foot_5"
+"thorax" -> "perna_centro_joint_6" [label="xyz: 0.115 -0.65 0.91 \nrpy: 0 -0 0"]
+"perna_centro_joint_6" -> "perna_centro_6"
+"perna_centro_6" -> "coxa_joint_6" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"coxa_joint_6" -> "coxa_6"
+"coxa_6" -> "femur_joint_6" [label="xyz: 0.52 -0.15 -0.05 \nrpy: 0 -0 0"]
+"femur_joint_6" -> "femur_6"
+"femur_6" -> "tibia_joint_6" [label="xyz: 0 0.045 -0.36 \nrpy: 0 -0 0"]
+"tibia_joint_6" -> "tibia_6"
+"tibia_6" -> "tibia_foot_joint_6" [label="xyz: 0 0.08 -0.57 \nrpy: 0 -0 0"]
+"tibia_foot_joint_6" -> "tibia_foot_6"
+}

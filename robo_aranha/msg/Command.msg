@@ -1,0 +1,28 @@
+<<<<<<< HEAD
+string SUBIR = SUBIR
+=======
+>>>>>>> 757455dcea83853c14d46b5823f811a0bd78fecf
+string FRENTE   = FRENTE
+string TRAS     = TRAS
+string DIREITA  = DIREITA
+string ESQUERDA = ESQUERDA
+<<<<<<< HEAD
+string ROTATE_LEFT = ROTATE_LEFT
+string ROTATE_RIGHT = ROTATE_RIGHT
+string INICIAR = INICIAR
+string DESCER = DESCER
+string DANCAR = DANCAR
+string DESLIGAR = TURN_OFF
+=======
+<<<<<<< HEAD
+string ROTATE_LEFT = ROTATE_LEFT
+string ROTATE_RIGHT = ROTATE_RIGHT
+=======
+string ROTATE_LEFT = GIRAR_ESQUERDA
+string ROTATE_RIGHT = GIRAR_DIREITA
+>>>>>>> c02c78023695f6a7c8fc256e18aef639a7457c36
+string INICIAR = INICIAR
+string DESCER = DESCER
+string DANCAR = DANCAR
+string DESLIGAR = TURN_OFF
+>>>>>>> 757455dcea83853c14d46b5823f811a0bd78fecf

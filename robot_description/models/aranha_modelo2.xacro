@@ -1,0 +1,324 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="crab">
+
+<!--################### Declaracão de variaveis e constantes ################-->
+	<xacro:property name="pi" value="3.1415926535897931" />
+	<xacro:property name="altura_base" value="0.4" />
+<!-- Distancia das pecas -->
+	<xacro:property name="dist_coxa_x_d" value="0.5" />
+	<xacro:property name="dist_coxa_x_e" value="-0.5" />
+	<xacro:property name="dist_femurl_x_d" value="-0.17" />
+	<xacro:property name="dist_femurl_x_e" value="0.17" />
+	<xacro:property name="dist_femurj_x_d" value="0.52" />
+	<xacro:property name="dist_femurj_x_e" value="-0.52" />
+	<xacro:property name="dist_tibiaj_x_d" value="-0.35" />
+	<xacro:property name="dist_tibiaj_x_e" value="0.35 " />
+	<xacro:property name="xunxo_d" value="0" />
+	<xacro:property name="xunxo_e" value="0.02 " />
+	<xacro:property name="altura_f_d" value="0" />
+	<xacro:property name="altura_f_e" value="0.04" />
+	<xacro:property name="altura_d" value="-0" />
+	<xacro:property name="altura_e" value="0.05" />
+	<xacro:property name="dist_tibiaj_x_e" value="0.35 " />
+	<xacro:property name="fund" value="-0.17 " />
+	<xacro:property name="fune" value="0.17 " />
+
+<!-- Joint properties -->
+	<xacro:property name="joint_lower_limit" value="-${pi/2}" />
+	<xacro:property name="joint_upper_limit" value="${pi/2}" />
+	<xacro:property name="joint_effort" value="10000" />
+	<xacro:property name="joint_velocity" value="100" />
+
+    <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+            <robotNamespace>/crab</robotNamespace>
+        </plugin>
+    </gazebo>
+
+
+<!--######################## Faz a Base do Robo #############################-->
+<link name="base_link"/>
+<joint name="base_joint" type="fixed">
+	<parent link="base_link"/>
+	<child link="thorax"/>
+	<origin rpy="0 0 0" xyz="0 0 0"/>
+</joint>
+
+  <link name="thorax">
+    <visual>
+      <geometry>
+        <mesh scale="0.01 0.01 0.01" filename="package://modelo/meshes/base.stl"/>
+      </geometry>
+      <origin rpy="0 0 ${pi/2}" xyz="0 0 ${altura_base}"/>
+      <material name="verde_limao">
+        <color rgba="0.5 0.9 0.5 1"/>
+      </material>
+    </visual>
+<collision>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <mesh scale="0.01 0.01 0.01" filename="package://modelo/meshes/base.stl"/>
+            </geometry>
+      <material name="verde_limao">
+        <color rgba="0.5 0.9 0.5 1"/>
+      </material>
+        </collision>
+
+        <inertial>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+            <mass value="0.1"/>
+            <inertia
+                ixx="1.0" ixy="0.0"  ixz="0.0"
+                iyy="1.0" iyz="0.0"
+                izz="1.0" />
+        </inertial>
+  </link>
+
+  <gazebo reference="thorax">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+<!--################## Macros da Perna/Fazendo a perna em si ################-->
+<xacro:macro name="leg" params="lado num x y angulo dist_x_coxa dist_femurj_x
+	dist_tibiaj_x fun altura xunxo altura_f">
+
+<!--Joint e Link para fixar coxa (caso contrario gira em torno do centro da base)-->
+	<joint name="leg_center_joint_${lado}${num}" type="fixed">
+	  <origin xyz="${x} ${y} ${altura_base+ 0.11}" rpy="0 0 0" /> <!-- imp -->
+	  <parent link="thorax" />
+	  <child link="leg_center_${lado}${num}" />
+	</joint>
+
+	<link name="leg_center_${lado}${num}" >
+        <inertial>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+            <mass value="0.01"/>
+            <inertia
+                ixx="1.0" ixy="0.0"  ixz="0.0"
+                iyy="1.0" iyz="0.0"
+                izz="1.0" />
+        </inertial>
+</link>
+
+
+<!--.................Joint entre "base"() e coxa / Link da Coxa .............-->
+<joint name="coxa_joint_${lado}${num}" type="revolute">
+  <origin xyz="0 0 ${altura}" rpy="0 ${pi/2} 0" /> <!-- segundo-->
+  <parent link="leg_center_${lado}${num}"/>
+  <child link="coxa_${lado}${num}" />
+  <limit lower="${joint_lower_limit}" upper="${joint_upper_limit}"
+     effort="${joint_effort}" velocity="${joint_velocity}" />
+</joint>
+
+        <transmission name="coxa_transmission_${lado}${num}">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="coxa_joint_${lado}${num}">
+                <hardwareInterface>EffortJointInterface</hardwareInterface>
+            </joint>
+            <actuator name="coxa_motor_${lado}${num}">
+                <hardwareInterface>EffortJointInterface</hardwareInterface>
+                <mechanicalReduction>1</mechanicalReduction>
+            </actuator>
+        </transmission>
+
+<link name="coxa_${lado}${num}">
+    <visual>
+        <origin xyz="0 0 ${dist_x_coxa}" rpy="0 ${-pi/2} 0" />
+        <geometry>
+          <mesh scale="0.01 0.01 0.01" filename="package://modelo/meshes/coxa_${lado}.stl"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.7 0.7 0 1" />
+        </material>
+    </visual>
+<collision>
+            <origin xyz="0 0 ${dist_x_coxa}" rpy="0 ${-pi/2} 0" />
+            <geometry>
+                <mesh scale="0.01 0.01 0.01" filename="package://modelo/meshes/coxa_${lado}.stl"/>
+            </geometry>
+        <material name="">
+          <color rgba="0.7 0.7 0 1" />
+      </material>
+        </collision>
+        <inertial>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+            <mass value="0.01"/>
+            <inertia
+                ixx="1.0" ixy="0.0"  ixz="0.0"
+                iyy="1.0" iyz="0.0"
+                izz="1.0" />
+        </inertial>
+</link>
+
+  <gazebo reference="coxa_${lado}${num}">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/BlueLaser  </material>
+  </gazebo>
+
+<!--.................Joint entre coxa e femur / Link ddo Femur. .............-->
+<joint name="femur_joint_${lado}${num}" type="revolute">
+		<origin xyz="${altura_f} ${xunxo} ${dist_femurj_x}" rpy="${-pi/2} 0 0" />
+		<parent link="coxa_${lado}${num}" />
+		<child link="femur_${lado}${num}" />
+		<axis xyz="0 0 -1" />
+		<limit lower="${joint_lower_limit}" upper="${joint_upper_limit}" effort="${joint_effort}" velocity="${joint_velocity}" />
+</joint>
+
+        <transmission name="femur_transmission_${lado}${num}">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="femur_joint_${lado}${num}">
+                <hardwareInterface>EffortJointInterface</hardwareInterface>
+            </joint>
+            <actuator name="femur_motor_${lado}${num}">
+                <hardwareInterface>EffortJointInterface</hardwareInterface>
+                <mechanicalReduction>1</mechanicalReduction>
+            </actuator>
+        </transmission>
+
+<link name="femur_${lado}${num}">
+		<visual>
+				<origin xyz="0.05 ${fun} -0.13" rpy="0 ${pi} ${pi/2}" />
+				<geometry>
+					<mesh scale="0.01 0.01 0.01"  filename="package://modelo/meshes/femur.stl" />
+				</geometry>
+				<material name="">
+					<color rgba="0 0.7 0.7 1" />
+				</material>
+		</visual>
+<collision>
+            <origin xyz="0.05 ${fun} -0.13" rpy="0 ${pi} ${pi/2}" />
+            <geometry>
+                <mesh scale="0.01 0.01 0.01"  filename="package://modelo/meshes/femur.stl" />
+            </geometry>
+        <material name="">
+					<color rgba="0 0.7 0.7 1" />
+				</material>
+        </collision>
+        <inertial>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+            <mass value="0.01"/>
+            <inertia
+                ixx="1.0" ixy="0.0"  ixz="0.0"
+                iyy="1.0" iyz="0.0"
+                izz="1.0" />
+        </inertial>
+</link>
+
+  <gazebo reference="femur_${lado}${num}">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/BlueLaser </material>
+  </gazebo>
+<!--.................Joint entre femur e Tibia / Link do Tibia. .............-->
+<joint name="tibia_joint_${lado}${num}" type="revolute">
+		<origin xyz="0.05 ${dist_tibiaj_x} 0" rpy="${pi} 0 ${pi/2}" />
+		<parent link="femur_${lado}${num}" />
+		<child link="tibia_${lado}${num}" />
+		<axis xyz="0 0 1" />
+		<limit lower="${joint_lower_limit}" upper="${joint_upper_limit}" effort="${joint_effort}" velocity="${joint_velocity}" />
+</joint>
+
+        <transmission name="tibia_transmission_${lado}${num}">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="tibia_joint_${lado}${num}">
+                <hardwareInterface>EffortJointInterface</hardwareInterface>
+            </joint>
+            <actuator name="tibia_motor_${lado}${num}">
+                <hardwareInterface>EffortJointInterface</hardwareInterface>
+                <mechanicalReduction>1</mechanicalReduction>
+            </actuator>
+        </transmission>
+
+<link name="tibia_${lado}${num}">
+		<visual>
+				<origin xyz="-0.05 0.06 0" rpy="${pi/2} 0  ${-pi/2} " />
+				<geometry>
+					<mesh scale="0.01 0.01 0.01" filename="package://modelo/meshes/tibia.stl" />
+				</geometry>
+				<material name="">
+					<color rgba="0.7 0 0.7 1" />
+				</material>
+		</visual>
+<collision>
+            <origin xyz="-0.05 0.06 0" rpy="${pi/2} 0  ${-pi/2} " />
+            <geometry>
+                <mesh scale="0.01 0.01 0.01" filename="package://modelo/meshes/tibia.stl" />
+            </geometry>
+        <material name="">
+					<color rgba="0 0.7 0.7 1" />
+				</material>
+        </collision>
+        <inertial>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+            <mass value="0.01"/>
+            <inertia
+                ixx="1.0" ixy="0.0"  ixz="0.0"
+                iyy="1.0" iyz="0.0"
+                izz="1.0" />
+        </inertial>
+</link>
+
+  <gazebo reference="tibia_${lado}${num}">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/BlueTransparent </material>
+  </gazebo>
+
+<!--.................Joint/ Link da para do robo.............................-->
+<joint name="tibia_foot_joint_${lado}${num}" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <parent link="tibia_${lado}${num}" />
+        <child link="tibia_foot_${lado}${num}" />
+    </joint>
+
+    <link name="tibia_foot_${lado}${num}" >
+        <inertial>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+            <mass value="0.01"/>
+            <inertia
+                ixx="1.0" ixy="0.0"  ixz="0.0"
+                iyy="1.0" iyz="0.0"
+                izz="1.0" />
+        </inertial>
+</link>
+
+</xacro:macro>
+
+<!--################# Declaracão da perna e suas posicoes ###################-->
+<xacro:leg lado="e" num="1" x="${-2.3/20}" y="0.65" angulo="${0}"
+	dist_x_coxa="${dist_coxa_x_e}" dist_femurj_x="${dist_femurj_x_e}"
+	dist_tibiaj_x="${dist_tibiaj_x_e}" fun="${fune}" altura="${altura_e}"
+	xunxo="${xunxo_e}" altura_f="${altura_f_e}" />
+
+<xacro:leg lado="e" num="2" x="${-2.3/20}" y="0" angulo="${0}"
+	dist_x_coxa="${dist_coxa_x_e}" dist_femurj_x="${dist_femurj_x_e}"
+	dist_tibiaj_x="${dist_tibiaj_x_e}" fun="${fune}" altura="${altura_e}"
+	xunxo="${xunxo_e}" altura_f="${altura_f_e}" />
+
+<xacro:leg lado="e" num="3" x="${-2.3/20}" y="-0.65" angulo="${0}"
+	dist_x_coxa="${dist_coxa_x_e}" dist_femurj_x="${dist_femurj_x_e}"
+	dist_tibiaj_x="${dist_tibiaj_x_e}" fun="${fune}" altura="${altura_e}"
+	xunxo="${xunxo_e}" altura_f="${altura_f_e}" />
+
+<xacro:leg lado="d" num="2" x="${2.3/20}" y="0" angulo="${0}"
+	dist_x_coxa="${dist_coxa_x_d}" dist_femurj_x="${dist_femurj_x_d}"
+	dist_tibiaj_x="${dist_tibiaj_x_d}" fun="${fund}" altura="${altura_d}"
+	xunxo= "${xunxo_d}"  altura_f="${altura_f_d}" />
+
+<xacro:leg lado="d" num="1" x="${2.3/20}" y="0.65" angulo="${0}"
+	dist_x_coxa="${dist_coxa_x_d}" dist_femurj_x="${dist_femurj_x_d}"
+	dist_tibiaj_x="${dist_tibiaj_x_d}" fun="${fund}" altura="${altura_d}"
+	xunxo= "${xunxo_d}"  altura_f="${altura_f_d}" />
+
+<xacro:leg lado="d" num="3" x="${2.3/20}" y="-0.65" angulo="${0}"
+	dist_x_coxa="${dist_coxa_x_d}" dist_femurj_x="${dist_femurj_x_d}"
+	dist_tibiaj_x="${dist_tibiaj_x_d}" fun="${fund}" altura="${altura_d}"
+	xunxo= "${xunxo_d}"  altura_f="${altura_f_d}" />
+
+
+
+
+</robot>
